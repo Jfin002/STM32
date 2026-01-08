@@ -53,7 +53,10 @@ It specifies data format, timing, synchronization, and direction of data flow.
 **Applications:**
 - Microcontroller to PC communication  
 - Bluetooth modules  
-- GPS modules  
+- GPS modules
+
+![UART - Copy](https://github.com/user-attachments/assets/21605214-b849-4708-b24b-a36161c3a554)
+
 
 ---
 
