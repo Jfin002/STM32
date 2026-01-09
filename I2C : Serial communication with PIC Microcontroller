@@ -1,4 +1,4 @@
-MASTER
+TRANSMITTER
 
 #pragma config FOSC = HS        // Oscillator Selection bits (HS oscillator)
 #pragma config WDTE = ON        // Watchdog Timer Enable bit (WDT enabled)
@@ -100,7 +100,7 @@ unsigned char I2C_Write(unsigned char Data)
 }
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
-SLAVE
+RECEIVER
 
 #pragma config FOSC = HS        // Oscillator Selection bits (HS oscillator)
 #pragma config WDTE = ON        // Watchdog Timer Enable bit (WDT enabled)
