@@ -50,7 +50,8 @@ Jeffin Paul
 
 ## UART - Bluetooth using STM32 and HC-05
 [<img width="692" height="1536" alt="image" src="https://github.com/user-attachments/assets/1deafa98-5ce0-4481-97fb-904bd466de73" />](https://chatgpt.com/backend-api/estuary/content?id=file_0000000038c072068e85d8cdb9522105&ts=491722&p=fs&cid=1&sig=a2c2f0cda3b284b978ad29dd3b1f4c431bf2d57bf6889643354fc5f1a486a1f0&v=0)
-https://chatgpt.com/backend-api/estuary/content?id=file_00000000250c7206a457eafc74717b88&ts=491722&p=fs&cid=1&sig=ee43368159b45711cbc62de4d270afe8a29e36074703726ae11b9f3bb0464c28&v=0
+<img width="694" height="1536" alt="image" src="https://github.com/user-attachments/assets/24f418b1-cc2c-473e-843d-ce79be51ae78" />
+
 
 
 ## LED Blinking
