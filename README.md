@@ -49,6 +49,10 @@ Jeffin Paul
 # PROJECTS
 
 ## UART - Bluetooth using STM32 and HC-05
+
+On typing the command "on" and "off" in the mobile app(serial bluetooth) the LED in the STM32
+Here we use HC-05, STM32F411VET6 and a mobile app 'serial monitor'.
+
 [<img width="692" height="1536" alt="image" src="https://github.com/user-attachments/assets/1deafa98-5ce0-4481-97fb-904bd466de73" />](https://chatgpt.com/backend-api/estuary/content?id=file_0000000038c072068e85d8cdb9522105&ts=491722&p=fs&cid=1&sig=a2c2f0cda3b284b978ad29dd3b1f4c431bf2d57bf6889643354fc5f1a486a1f0&v=0)
 <img width="694" height="1536" alt="image" src="https://github.com/user-attachments/assets/24f418b1-cc2c-473e-843d-ce79be51ae78" />
 
