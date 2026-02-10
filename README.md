@@ -50,6 +50,7 @@ Jeffin Paul
 
 ## UART - Bluetooth using STM32 and HC-05
 
+Components used are STM32f411vet6, HC-05
 On typing the command "on" and "off" in the mobile app(serial bluetooth) the LED in the STM32.
 Here we use HC-05, STM32F411VET6 and a mobile app 'serial monitor'.
 
@@ -60,6 +61,7 @@ Here we use HC-05, STM32F411VET6 and a mobile app 'serial monitor'.
 
 ## Home Automation
 
+Components used are STM32f411vet6, HC-05
 '1' - LED on
 '0' - LED off
 
