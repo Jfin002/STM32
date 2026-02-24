@@ -161,3 +161,150 @@ void Delay_ms(uint32_t ms) {
         __NOP();
     }
 }
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2. Printing numbers incrementing from 1-20
+
+#include "stm32f4xx.h"
+#include <stdint.h>
+
+/* --- Constants --- */
+#define SSD1306_I2C_ADDR    (0x3C << 1)
+#define OLED_WIDTH          128
+
+/* --- Font Data (5x7) --- */
+const uint8_t font_digits[][5] = {
+    {0x3E, 0x51, 0x49, 0x45, 0x3E}, // 0
+    {0x00, 0x42, 0x7F, 0x40, 0x00}, // 1
+    {0x42, 0x61, 0x51, 0x49, 0x46}, // 2
+    {0x21, 0x41, 0x45, 0x4B, 0x31}, // 3
+    {0x18, 0x14, 0x12, 0x7F, 0x10}, // 4
+    {0x27, 0x45, 0x45, 0x45, 0x39}, // 5
+    {0x3C, 0x4A, 0x49, 0x49, 0x30}, // 6
+    {0x01, 0x71, 0x09, 0x05, 0x03}, // 7
+    {0x36, 0x49, 0x49, 0x49, 0x36}, // 8
+    {0x06, 0x49, 0x49, 0x29, 0x1E}  // 9
+};
+
+/* --- Prototypes --- */
+void I2C1_Init(void);
+void OLED_Init(void);
+void OLED_WriteCmd(uint8_t cmd);
+void OLED_WriteData(uint8_t data);
+void OLED_Clear(void);
+void OLED_PrintNum(uint8_t num, uint8_t page, uint8_t col);
+void Delay_ms(uint32_t ms);
+
+int main(void) {
+    I2C1_Init();
+    OLED_Init();
+    OLED_Clear();
+
+    while (1) {
+        for (uint8_t i = 1; i <= 20; i++) {
+            // Print number at Page 3, Column 60 (center-ish)
+            OLED_PrintNum(i, 3, 60);
+
+            Delay_ms(500); // Wait half a second
+        }
+        Delay_ms(1000); // Pause at 20 before restarting
+        OLED_Clear();
+    }
+}
+
+/* --- Display Functions --- */
+
+void OLED_PrintNum(uint8_t num, uint8_t page, uint8_t col) {
+    uint8_t tens = num / 10;
+    uint8_t units = num % 10;
+
+    // 1. Clear the specific area first to prevent digit ghosting
+    // We clear 2 characters worth of space (approx 15 pixels wide)
+    OLED_WriteCmd(0xB0 + page);
+    OLED_WriteCmd(col & 0x0F);
+    OLED_WriteCmd(0x10 | (col >> 4));
+    for(int i=0; i<15; i++) OLED_WriteData(0x00);
+
+    // 2. Reset cursor to start printing
+    OLED_WriteCmd(0xB0 + page);
+    OLED_WriteCmd(col & 0x0F);
+    OLED_WriteCmd(0x10 | (col >> 4));
+
+    // 3. Print Tens digit if > 0
+    if (tens > 0) {
+        for (int i = 0; i < 5; i++) OLED_WriteData(font_digits[tens][i]);
+        OLED_WriteData(0x00); // space between digits
+    } else {
+        // If single digit, send empty space to keep alignment
+        for (int i = 0; i < 6; i++) OLED_WriteData(0x00);
+    }
+
+    // 4. Print Units digit
+    for (int i = 0; i < 5; i++) OLED_WriteData(font_digits[units][i]);
+}
+
+void OLED_Clear(void) {
+    for (uint8_t i = 0; i < 8; i++) {
+        OLED_WriteCmd(0xB0 + i);
+        OLED_WriteCmd(0x00);
+        OLED_WriteCmd(0x10);
+        for (uint8_t j = 0; j < 128; j++) OLED_WriteData(0x00);
+    }
+}
+
+/* --- Register Level I2C --- */
+
+void I2C1_Init(void) {
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+    RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
+    GPIOB->MODER |= (2 << 16) | (2 << 18);
+    GPIOB->OTYPER |= (1 << 8) | (1 << 9);
+    GPIOB->AFR[1] |= (4 << 0) | (4 << 4);
+    I2C1->CR2 = 16;
+    I2C1->CCR = 80;
+    I2C1->TRISE = 17;
+    I2C1->CR1 |= I2C_CR1_PE;
+}
+
+void I2C1_Start(void) {
+    I2C1->CR1 |= I2C_CR1_START;
+    while (!(I2C1->SR1 & I2C_SR1_SB));
+}
+
+void I2C1_Addr(uint8_t addr) {
+    I2C1->DR = addr;
+    while (!(I2C1->SR1 & I2C_SR1_ADDR));
+    (void)I2C1->SR2;
+}
+
+void I2C1_Write(uint8_t data) {
+    while (!(I2C1->SR1 & I2C_SR1_TXE));
+    I2C1->DR = data;
+    while (!(I2C1->SR1 & I2C_SR1_BTF));
+}
+
+void OLED_WriteCmd(uint8_t cmd) {
+    I2C1_Start();
+    I2C1_Addr(SSD1306_I2C_ADDR);
+    I2C1_Write(0x00);
+    I2C1_Write(cmd);
+    I2C1->CR1 |= I2C_CR1_STOP;
+}
+
+void OLED_WriteData(uint8_t data) {
+    I2C1_Start();
+    I2C1_Addr(SSD1306_I2C_ADDR);
+    I2C1_Write(0x40);
+    I2C1_Write(data);
+    I2C1->CR1 |= I2C_CR1_STOP;
+}
+
+void OLED_Init(void) {
+    Delay_ms(100);
+    uint8_t init_cmds[] = {0xAE, 0xD5, 0x80, 0xA8, 0x3F, 0xD3, 0x00, 0x40, 0x8D, 0x14, 0x20, 0x02, 0xA1, 0xC8, 0xDA, 0x12, 0x81, 0xCF, 0xD9, 0xF1, 0xDB, 0x40, 0xA4, 0xA6, 0xAF};
+    for(int i=0; i<sizeof(init_cmds); i++) OLED_WriteCmd(init_cmds[i]);
+}
+
+void Delay_ms(uint32_t ms) {
+    for (uint32_t i = 0; i < ms * 1600; i++) __asm("nop");
+}
