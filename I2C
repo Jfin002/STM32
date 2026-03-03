@@ -49,6 +49,46 @@ int main(void)
     }
 }
 
+// OR //
+
+#include <stdio.h>
+#include <stdint.h>
+#include "stm32f4xx.h"
+#include "uart.h"
+#include "mpu6050.h"
+
+int16_t ax, ay, az;
+double ax_g, ay_g, az_g;
+
+extern uint8_t mpu_data[6];
+
+/*SDA --> PB8
+ * SCL ---> PB9
+ * ONCE DEBUGGED -->OPEN LIVE EXPRESSION
+ *  ADD AX,AY,AZ VARIABLES ---> CLICK RESUME
+ */
+
+int main(void)
+{
+    /*uart2_tx_init();*/
+    mpu6050_init();
+
+    while(1)
+    {
+        mpu6050_read_accel();
+
+        ax = (int16_t)((mpu_data[0] << 8) | mpu_data[1]);
+        ay = (int16_t)((mpu_data[2] << 8) | mpu_data[3]);
+        az = (int16_t)((mpu_data[4] << 8) | mpu_data[5]);
+
+        ax_g = ax / ACCEL_SENS_2G;
+        ay_g = ay / ACCEL_SENS_2G;
+        az_g = az / ACCEL_SENS_2G;
+
+        printf("AX: %.2d AY: %.2d AZ: %.2d\\r\\n", (int)(ax_g*100), (int)(ay_g*100), (int)(az_g*100));
+    }
+}
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 I2C.c
 /*
